@@ -1,5 +1,6 @@
 use crate::{
-    bindings, success, ClientEventRequest, SimConnect, SimConnectError, SystemEventRequest,
+    bindings, success, ClientEvent, ClientEventRequest, EventFlag, SimConnect, SimConnectError,
+    SystemEventRequest,
 };
 
 // In order to simplify the usage we're using a single notification group for all client events.
@@ -131,5 +132,30 @@ impl SimConnect {
         self.client_event_register.clear();
 
         Ok(())
+    }
+
+    /// Request that the Microsoft Flight Simulator server transmit to all SimConnect clients the specified client event.
+    #[tracing::instrument(
+        name = "SimConnect::transmit_client_event",
+        level = "debug",
+        skip(self)
+    )]
+    pub fn transmit_client_event(
+        &mut self,
+        object_id: u32,
+        event: ClientEvent,
+        event_flag: EventFlag,
+    ) -> Result<(), SimConnectError> {
+        success!(unsafe {
+            let event_data: (ClientEventRequest, u32) = event.try_into().unwrap();
+            bindings::SimConnect_TransmitClientEvent(
+                self.handle.as_ptr(),
+                object_id,
+                event_data.0 as u32,
+                event_data.1,
+                NOTIFICATION_GROUP_ID,
+                event_flag as u32,
+            )
+        })
     }
 }

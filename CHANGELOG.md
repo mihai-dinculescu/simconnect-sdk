@@ -8,6 +8,8 @@ file. This change log follows the conventions of
 
 ### Added
 
+- `SimConnect::transmit_client_event` has been implemented.  Use `SimConnect::subscribe_to_client_event` to set up the client event(s) prior to using the `SimConnect::transmit_client_event` call.
+- Added a few NAV/COM and Transponder related client events.
 - Client events are now implemented through `SimConnect::subscribe_to_client_event`, `SimConnect::unsubscribe_from_client_event` and `SimConnect::unsubscribe_from_all_client_events`.
 - `subscribe_to_client_events.rs` example has been added.
 - `SimConnectError::EventAlreadySubscribedTo` and `SimConnectError::EventNotSubscribedTo` error variants have been added.
